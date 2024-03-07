@@ -4,7 +4,7 @@ This is a simple application built using Next.js for the frontend and Node.js wi
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/your-username/car-selling-app.git`
+1. Clone the repository: `git clone https://github.com/saqib-github/car-selling-service.git`
 2. Install dependencies: `npm install`
 
 ## Usage
