@@ -19,9 +19,50 @@ const CarRequestForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      notify("Token not found. Please log in.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("model", carModel);
+    formData.append("price", price);
+    formData.append("phone", phoneNumber);
+    pictures.forEach((picture) => {
+      formData.append("images", picture);
+    });
+
+    try {
+      const response = await fetch("http://localhost:4000/api/car-request", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        // Redirect to the next screen upon successful submission
+        // For example, using next/router
+        const data = await response.json();
+        console.log(data, "response");
+        notify(data.message);
+        setCarModel("");
+        setPrice("");
+        setPhoneNumber("");
+        setMaxPictures(10);
+        setPictures([]);
+      } else {
+        notify("Submission failed. Please try again.");
+      }
+    } catch (error) {
+      notify("Submission failed. Please try again.");
+      console.error("Submission failed", error);
+    }
   };
 
   return (
@@ -100,6 +141,7 @@ const CarRequestForm = () => {
                 type="file"
                 accept="image/*"
                 multiple
+                filename={pictures?.length > 0 ? pictures?.length : ""}
                 onChange={handlePictureUpload}
               />
             </Col>

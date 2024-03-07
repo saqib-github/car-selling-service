@@ -1,6 +1,6 @@
 # Car Selling App
 
-This is a simple application built using Next.js for the frontend and Node.js with Express.js for the backend. It allows users to submit a request for a car selling service.
+This is a simple application built using Next.js for the front end and Node.js with Express.js for the backend. It allows users to submit a request for a car selling service.
 
 ## Installation
 

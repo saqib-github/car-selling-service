@@ -12,9 +12,55 @@ import {
 } from "reactstrap";
 import loginBannerImg from "../public/images/login-banner.jpg";
 import Image from "next/image";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // login component
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+      const email = formData.get("email");
+      const password = formData.get("password");
+
+      const response = await fetch("http://localhost:4000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const { token } = data;
+
+        // Save the token to localStorage
+        localStorage.setItem("token", token);
+
+        // Redirect to the next screen upon successful login
+        // For example, using next/router
+        router.push("/car-request");
+      } else {
+        // Handle login error
+        toast.error("Invalid Credentials");
+        console.error("Login failed");
+      }
+    } catch (error) {
+      toast.error("Login Failed");
+      console.error("Login failed", error);
+    }
+    setLoading(false);
+  };
+
   return (
     <>
       <Head>
@@ -32,7 +78,7 @@ export default function Home() {
                   <h2 className="text-center">
                     Login<i className="bi bi-car-front mx-2"></i>
                   </h2>
-                  <Form className="mb-3">
+                  <Form className="mb-3" onSubmit={handleSubmit}>
                     <FormGroup>
                       <Label for="email">Email</Label>
                       <div className="d-flex align-items-center input-box">
@@ -71,8 +117,12 @@ export default function Home() {
                       </div>
                     </FormGroup>
                     <div className="text-center">
-                      <Button type="submit" className="login-btn">
-                        Login
+                      <Button
+                        disabled={loading}
+                        type="submit"
+                        className="login-btn"
+                      >
+                        {loading ? "Loading..." : "Login"}
                       </Button>
                     </div>
                   </Form>
@@ -94,6 +144,7 @@ export default function Home() {
             </Col>
           </Row>
         </section>
+        <Toaster />
       </main>
     </>
   );
